@@ -61,8 +61,51 @@ public MessageResponseDTO createPerson(@RequestBody Person person) {
 
 */
 
+// ------------------------------------------------------------------------------------------------
+
 /*
 EXPLICAÇÃO 2
+
+O controller ter que servir apenas para ponto de entrada, sem regras de negócio
+Criar service para fazer o papel de salvar e interação com repository
+
+atalho intellij - shift option command l - atalho reformata arquivos, otimizando imports e apagando imports desnecessários
+
+@ResponseStatus(value = HttpStatus.CREATED) = código 201
+
+*/
+
+// ----------------------------------------------------------------------------
+
+/*
+EXPLICAÇÃO 3
+
+@valid = chamar objeto de outro lugar para ele fazer as validações dele, DTO.
+
+Só pode salvar person, para converter personDTO para person:
+Person personToSave = Person.builder()
+		            	.firstname(personDTO.getFirstName())
+				.lastname(personDTO.getLastName())
+				.birthDate(personDRO.getBirthDate()) //dto data de nascimento como String, porém banco localdate
+							criar objeto dateformat
+				.phones(personDTO.getPhones()) também teria que fazer toda conversão
+				.build();
+
+para evitar isso, vamos utilizar a biblioteca MapStruck
+ajuda converter dto para entidade e entidade para dto.	
+
+ACESSAR mapstruct.org 
+
+editar pom.xml
+
+embaixo do lombok adicionar:
+
+<path>
+	<groupid>org.mapstruct</groupId>
+	<artifactId>masstruct-processor</artifactId>
+	<version>1.3.1.Final</version.
+</path>
+
 
 */
 
@@ -88,20 +131,73 @@ import one.digitalinnovation.personapi.service.PersonService;
 
 @RestController
 @RequestMapping("/api/v1/people")
+@AllArgsConstructor(onConstructor = @_ _(@Autowired)
 public class PersonController {
 
 	private PersonService personService;
 
+
+	/*
+	removido construtor padrao devido a anotação @AllArgsConstructor(onConstructor = @_ _(@Autowired)
+	
 	@Autowired(required = true)
 	public PersonController(PersonService personService) {
 		super();
 		this.personService = personService;
 	}
 
+	*/
+
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public MessageResponseDTO createPerson(@RequestBody @Valid PersonDTO personDTO) {
 		return personService.createPerson(personDTO);
 	}
+
+
+	//Listar todos
+	@GetMapping
+	public List<PersonDTO> listall() {
+		return personService.listAll();
+	}
+	
+
+	// como tem 2 gets, precisa criar "/{id}"
+	// @pathvariable = 
+	/*
+		Exemplo:
+		@GetMapping("/api/employees/{id}")
+		@ResponseBody
+		public String getEmployeesById(@PathVariable String id) {
+    			return "ID: " + id;
+		}
+
+	the @PathVariable annotation can be used to handle template variables in the request
+	URI mapping, and set them as method parameters.
+
+	*/
+
+
+
+	@GetMapping("/{id}")
+	public PersonDTO findById(@pathvariable Long id) throws PersonNotFoundException {
+		return personService.findById(id);
+	}
+
+
+	@DeleteMapping("/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteById(@pathvariable Long id) throws PersonNotFoundException {
+		personService.delete(id);
+	}
+
+
+	@PutMapping("/{id}")	
+	public MessageResponseDTO updateById(@PathVariableLong id, @RequestBody @valid PersonDTO personDTO) throws PersonNotFoundException{
+		return personService.updateById(id, personDTO);
+	}
+
+
+
 
 }

@@ -1,3 +1,10 @@
+/*
+@valid = "diz para a implementação, pro validation, pro hibernate
+          pra ele fazer a validação através das anotações de cada um desses atributos para nós."
+Quando você chama algo qu epossui suas validações de outro lugar, precisa colocar o @valid
+
+
+*/
 package one.digitalinnovation.personapi.dto.request;
 
 import java.util.List;

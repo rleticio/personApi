@@ -1,0 +1,12 @@
+DTO = fazer verificações a nível de sistema ao invés de somente no banco de dados.
+
+Data transfer object
+
+Objeto criado para fazer a transferência de dados
+
+Possui os mesmos atributos da classe Person e phone.(entidade)
+
+Essas verificações na camada de controller
+
+
+
